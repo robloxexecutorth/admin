@@ -3,67 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RETH — REMOTE CONTROL</title>
+    <title>RETH — ADMIN CONTROL PANEL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #050505; color: white; font-family: sans-serif; }
-        .control-card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 10px; }
-        select { background: #111; color: white; border: 1px solid #333; padding: 5px 10px; border-radius: 5px; }
+        body { background: #050505; color: white; font-family: 'Inter', sans-serif; }
+        .control-card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 18px; border-radius: 12px; margin-bottom: 8px; transition: all 0.3s; }
+        .control-card:hover { border-color: #333; background: #0f0f0f; }
+        select { background: #161616; color: white; border: 1px solid #333; padding: 6px 12px; border-radius: 8px; font-size: 12px; outline: none; cursor: pointer; }
+        select:focus { border-color: #fff; }
     </style>
 </head>
-<body class="p-10">
+<body class="p-6 md:p-20">
     <div class="max-w-md mx-auto">
-        <h1 class="text-2xl font-black mb-8 italic">RETH ADMIN HUB</h1>
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl font-black italic tracking-tighter italic uppercase">RETH ADMIN HUB</h1>
+            <p class="text-[10px] text-zinc-500 font-mono mt-2 tracking-[0.3em]">REMOTE STATUS CONTROLLER</p>
+        </header>
         
-        <div id="controls">
+        <div id="controls" class="space-y-3">
             <div class="control-card flex justify-between items-center">
-                <span>DELTA</span>
+                <span class="font-bold text-sm tracking-widest">DELTA</span>
                 <select id="delta"><option value="Working">Working</option><option value="Patched">Patched</option></select>
             </div>
             <div class="control-card flex justify-between items-center">
-                <span>CODEX</span>
+                <span class="font-bold text-sm tracking-widest">CODEX</span>
                 <select id="codex"><option value="Working">Working</option><option value="Patched">Patched</option></select>
             </div>
             <div class="control-card flex justify-between items-center">
-                <span>ARCEUS X</span>
+                <span class="font-bold text-sm tracking-widest">ARCEUS X</span>
                 <select id="arceus"><option value="Working">Working</option><option value="Patched">Patched</option></select>
             </div>
             <div class="control-card flex justify-between items-center">
-                <span>TRIGON EVO</span>
+                <span class="font-bold text-sm tracking-widest">TRIGON EVO</span>
                 <select id="trigon"><option value="Working">Working</option><option value="Patched">Patched</option></select>
             </div>
             <div class="control-card flex justify-between items-center">
-                <span>RONIX</span>
+                <span class="font-bold text-sm tracking-widest">RONIX</span>
                 <select id="ronix"><option value="Working">Working</option><option value="Patched">Patched</option></select>
             </div>
             <div class="control-card flex justify-between items-center">
-                <span>XENO</span>
+                <span class="font-bold text-sm tracking-widest">XENO</span>
                 <select id="xeno"><option value="Working">Working</option><option value="Patched">Patched</option></select>
             </div>
             <div class="control-card flex justify-between items-center">
-                <span>VELOCITY</span>
+                <span class="font-bold text-sm tracking-widest">VELOCITY</span>
                 <select id="velocity"><option value="Working">Working</option><option value="Patched">Patched</option></select>
             </div>
         </div>
 
-        <button onclick="updateStatus()" id="saveBtn" class="w-full bg-white text-black font-bold py-4 rounded-xl mt-5 hover:bg-zinc-200 transition">
+        <button onclick="updateStatus()" id="saveBtn" class="w-full bg-white text-black font-black py-4 rounded-xl mt-8 hover:bg-zinc-200 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95">
             UPDATE ALL STATUS
         </button>
         
-        <p id="msg" class="text-center mt-4 text-xs text-zinc-500 font-mono uppercase"></p>
+        <p id="msg" class="text-center mt-6 text-[10px] font-mono uppercase tracking-widest"></p>
     </div>
 
     <script>
-        // ใส่ Gist ID และ Token ของคุณตรงนี้ (ต้องสร้าง Personal Access Token ใน GitHub)
-        const GIST_ID = 'https://gist.github.com/robloxexecutorth/7e89b2b9a578abf43c87ab8baccb8efc';
-        const GITHUB_TOKEN = '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';
+        // *** ใส่ข้อมูลของคุณตรงนี้ ***
+        const GIST_ID = '7e89b2b9a578abf43c87ab8baccb8efc'; // ตัวอย่าง: 43c87ab8baccb8efc1... (ห้ามมี https://)
+        const GITHUB_TOKEN = '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'; // ตัวอย่าง: github_pat_...
 
         async function updateStatus() {
             const btn = document.getElementById('saveBtn');
             const msg = document.getElementById('msg');
             
+            // ป้องกันความผิดพลาดจากการใส่ GIST_ID ผิด
+            if (GIST_ID.includes("http")) {
+                alert("GIST_ID ผิด! ให้ใส่เฉพาะรหัสท้าย URL เท่านั้น (ห้ามใส่ลิงก์เต็ม)");
+                return;
+            }
+
             btn.disabled = true;
-            msg.innerText = "Syncing with Cloud...";
+            btn.style.opacity = "0.5";
+            msg.style.color = "#71717a";
+            msg.innerText = "Syncing with GitHub Cloud...";
 
             const newData = {
                 delta: document.getElementById('delta').value,
@@ -79,8 +92,9 @@
                 const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
                     method: 'PATCH',
                     headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         files: {
@@ -91,14 +105,23 @@
                     })
                 });
 
-                if(response.ok) {
+                if (response.ok) {
+                    msg.style.color = "#22c55e"; // สีเขียว
                     msg.innerText = "SUCCESS: STATUS UPDATED!";
-                    setTimeout(() => { msg.innerText = ""; }, 3000);
+                    setTimeout(() => { msg.innerText = ""; }, 4000);
+                } else {
+                    const err = await response.json();
+                    msg.style.color = "#ef4444"; // สีแดง
+                    msg.innerText = "FAILED: " + (err.message || "Unauthorized");
+                    console.error("API Error:", err);
                 }
             } catch (err) {
-                msg.innerText = "ERROR: UPDATE FAILED";
+                msg.style.color = "#ef4444";
+                msg.innerText = "NETWORK ERROR: CHECK CONNECTION";
+                console.error("Network Error:", err);
             } finally {
                 btn.disabled = false;
+                btn.style.opacity = "1";
             }
         }
     </script>
