@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RETH — REMOTE CONTROL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #050505; color: white; font-family: sans-serif; }
+        .control-card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; border-radius: 15px; margin-bottom: 10px; }
+        select { background: #111; color: white; border: 1px solid #333; padding: 5px 10px; border-radius: 5px; }
+    </style>
+</head>
+<body class="p-10">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl font-black mb-8 italic">RETH ADMIN HUB</h1>
+        
+        <div id="controls">
+            <div class="control-card flex justify-between items-center">
+                <span>DELTA</span>
+                <select id="delta"><option value="Working">Working</option><option value="Patched">Patched</option></select>
+            </div>
+            <div class="control-card flex justify-between items-center">
+                <span>CODEX</span>
+                <select id="codex"><option value="Working">Working</option><option value="Patched">Patched</option></select>
+            </div>
+            <div class="control-card flex justify-between items-center">
+                <span>ARCEUS X</span>
+                <select id="arceus"><option value="Working">Working</option><option value="Patched">Patched</option></select>
+            </div>
+            <div class="control-card flex justify-between items-center">
+                <span>TRIGON EVO</span>
+                <select id="trigon"><option value="Working">Working</option><option value="Patched">Patched</option></select>
+            </div>
+            <div class="control-card flex justify-between items-center">
+                <span>RONIX</span>
+                <select id="ronix"><option value="Working">Working</option><option value="Patched">Patched</option></select>
+            </div>
+            <div class="control-card flex justify-between items-center">
+                <span>XENO</span>
+                <select id="xeno"><option value="Working">Working</option><option value="Patched">Patched</option></select>
+            </div>
+            <div class="control-card flex justify-between items-center">
+                <span>VELOCITY</span>
+                <select id="velocity"><option value="Working">Working</option><option value="Patched">Patched</option></select>
+            </div>
+        </div>
+
+        <button onclick="updateStatus()" id="saveBtn" class="w-full bg-white text-black font-bold py-4 rounded-xl mt-5 hover:bg-zinc-200 transition">
+            UPDATE ALL STATUS
+        </button>
+        
+        <p id="msg" class="text-center mt-4 text-xs text-zinc-500 font-mono uppercase"></p>
+    </div>
+
+    <script>
+        // ใส่ Gist ID และ Token ของคุณตรงนี้ (ต้องสร้าง Personal Access Token ใน GitHub)
+        const GIST_ID = '7e89b2b9a578abf43c87ab8baccb8efc';
+        const GITHUB_TOKEN = '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';
+
+        async function updateStatus() {
+            const btn = document.getElementById('saveBtn');
+            const msg = document.getElementById('msg');
+            
+            btn.disabled = true;
+            msg.innerText = "Syncing with Cloud...";
+
+            const newData = {
+                delta: document.getElementById('delta').value,
+                codex: document.getElementById('codex').value,
+                arceus: document.getElementById('arceus').value,
+                trigon: document.getElementById('trigon').value,
+                ronix: document.getElementById('ronix').value,
+                xeno: document.getElementById('xeno').value,
+                velocity: document.getElementById('velocity').value
+            };
+
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            "status.json": {
+                                content: JSON.stringify(newData, null, 2)
+                            }
+                        }
+                    })
+                });
+
+                if(response.ok) {
+                    msg.innerText = "SUCCESS: STATUS UPDATED!";
+                    setTimeout(() => { msg.innerText = ""; }, 3000);
+                }
+            } catch (err) {
+                msg.innerText = "ERROR: UPDATE FAILED";
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
